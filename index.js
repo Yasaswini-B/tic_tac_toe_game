@@ -59,7 +59,7 @@ io.on('connection', function(socket){
 	socket.on('box click', function(data){
 		var players =Object.keys(sid_array);
 		var i = players.indexOf(socket.id);
-	  		if((players.length >= 2) && (i == 0 || i == 1){
+	  		if((players.length >= 2) && (i == 0 || i == 1)){
 		  		play_game['player_num'] = i+1;
 		  		play_game['object_id'] = data;
 		  		play_game['game_over'] = false;
