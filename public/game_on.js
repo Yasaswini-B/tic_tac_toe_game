@@ -3,9 +3,23 @@ var socket = io.connect();
 var count=1;
 var status = "";
 var winning_possibilities =[[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]];
-var images_url = ["" ,"tic_cross.png", "tic_round.png"];
+var images_url = ["tic_cross.png", "tic_round.png"];
 
-// var c_obj = new Client();
+
+function tic_tac_game_on(){
+  var ticvar = document.getElementById("tic_tac_table");
+  for(var i=0; i<ticvar.rows.length; i++){
+    for(var j=0; j<ticvar.rows[i].cells.length; j++){
+      if(count <= 9){
+      ticvar.rows[i].cells[j].addEventListener("click",changeChar);
+      }
+    }
+  }
+}
+
+function changeChar(){
+    socket.emit('box click', this.id);
+}
 
 socket.on('new object', function (player_game){
 
@@ -24,7 +38,7 @@ socket.on('new object', function (player_game){
       myimg.style.height = "inherit";
       myimg.style.width = "inherit";
       if((count % 2 != 0 && player_num == 1) || (count % 2 == 0 && player_num == 2)){
-        myimg.setAttribute("src", images_url[player_num]);
+        myimg.setAttribute("src", images_url[parseInt(player_num) - 1]);
         new_object.appendChild(myimg);
         new_object.value = player_num;
         socket.emit('error message', "clear", count); 
@@ -60,11 +74,6 @@ socket.on('new object', function (player_game){
   game_status.innerHTML = status;
 
 });
-
-
-
-
-
 
 
 function check_status(element_id, player_num){
@@ -103,19 +112,3 @@ socket.on('single player', function(message){
 });
 
 
-
-
-function tic_tac_game_on(){
-  var ticvar = document.getElementById("tic_tac_table");
-  for(var i=0; i<ticvar.rows.length; i++){
-    for(var j=0; j<ticvar.rows[i].cells.length; j++){
-      if(count <= 9){
-      ticvar.rows[i].cells[j].addEventListener("click",changeChar);
-      }
-    }
-  }
-}
-
-function changeChar(){
-    socket.emit('box click', this.id);
-}

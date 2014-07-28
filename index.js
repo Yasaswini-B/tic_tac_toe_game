@@ -19,7 +19,6 @@ io.on('connection', function(socket){
 	console.log('a user connected');
 	sid_array[socket.id] = socket;
 	var players =Object.keys(sid_array);
-
 	if(players.length == 1){
 		msg = "Waiting for the 2nd player";
 		show_table = false;
@@ -77,15 +76,8 @@ io.on('connection', function(socket){
 			break;
 			case "wrong player":
 				i_val = (check_val % 2 == 0) ? 1 : 0;
-
-				// if(check_val % 2 != 0){
-					sid_array[players[check_val % 2]].emit('error msg display', "This is player "+1+"'s turn...please wait!");
-					sid_array[players[i_val]].emit('error msg display', "This is your turn!");
-				// }
-				// if(check_val % 2 == 0){
-				// 	sid_array[players[0]].emit('error msg display', "This is player "+2+"'s turn...please wait!");
-				// 	sid_array[players[1]].emit('error msg display', "This is your turn!");
-				// }
+				sid_array[players[check_val % 2]].emit('error msg display', "This is player "+(parseInt(i_val) + 1)+"'s turn...please wait!");
+				sid_array[players[i_val]].emit('error msg display', "This is your turn!");
 			break;
 			case "game over":
 				msg = "The game is over..please click play again to start new game!";
@@ -106,6 +98,3 @@ io.emit('some event', { for: 'everyone' });
 http.listen(3000, function (){
   console.log('listening on *:3000');
 });
-
-
-
