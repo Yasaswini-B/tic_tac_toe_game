@@ -1,0 +1,10 @@
+{
+  "name": "socket-tic-tac-toe",
+  "version": "0.0.1",
+  // "private": "true",
+  "description": "my first socket.io app",
+  "dependencies": {
+    "express": "^4.6.1",
+    "socket.io": "^1.0.6"
+  }
+}

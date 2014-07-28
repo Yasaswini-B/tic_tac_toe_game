@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" type="text/css" href="style_game.css">
+    <script src="/socket.io/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script src="game_on.js">
+    
+   
+    </script>
+</head>
+<body onload="tic_tac_game_on()"> 
+  <div class="main">
+    <div class="game_status">
+      <p class="status" id="status"> </p>
+      <p class="error" id="error"></p>
+    </div>
+    <table class="tic_tac_table" name="tic_tac_table" id="tic_tac_table">
+        <tr>
+            <td name="tic_tac" id="tic_tac1" ></td>
+            <td name="tic_tac" id="tic_tac2" ></td>
+            <td name="tic_tac" id="tic_tac3" ></td>
+        </tr>
+        <tr>
+            <td name="tic_tac" id="tic_tac4" ></td>
+            <td name="tic_tac" id="tic_tac5" ></td>
+            <td name="tic_tac" id="tic_tac6" ></td>
+        </tr>
+        <tr>
+            <td name="tic_tac" id="tic_tac7" ></td>
+            <td name="tic_tac" id="tic_tac8" ></td>
+            <td name="tic_tac" id="tic_tac9" ></td>
+        </tr>
+    </table>
+  </div>
+</body>
+</html>
