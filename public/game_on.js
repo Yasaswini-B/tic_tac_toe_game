@@ -10,7 +10,7 @@ var Client ={
   player_turn: 1,
   curent_player: 0,
   game_status: document.getElementById("status"),
-  ticvar: document.getElementById("tic_tac_table"),
+  ticvar: document.getElementsByName("tic_tac"),
   error_status: document.getElementById("error"),
   name_board: document.getElementById("player_name"),
   room_name: "",
@@ -30,11 +30,9 @@ var Client ={
   game_start: function(){
     var func = this.change_char;
     var c_obj = this;
-    for(var i=0; i<this.ticvar.rows.length; i++){
-      for(var j=0; j<this.ticvar.rows[i].cells.length; j++){
+    for(var i=0; i<this.ticvar.length; i++){
         if(this.count <= 9){
-        this.ticvar.rows[i].cells[j].addEventListener("click",function() { func(event, c_obj);});
-        }
+        this.ticvar[i].addEventListener("click",function() { func(event, c_obj);});
       }
     }
   },
@@ -42,15 +40,15 @@ var Client ={
   change_char: function (e, c_obj){
     var cell_object = document.getElementById(e.target.id);
     if(c_obj.count <= 9){
-      if(cell_object.value == 1 || cell_object.value == 2){
-        err_msg = "This cell is filled, please try in other cell!"; 
-      }else{
-        if(c_obj.player_turn == c_obj.curent_player){
+      if(c_obj.player_turn == c_obj.curent_player){
+        if(cell_object.value === 1 || cell_object.value === 2){
+          err_msg = "This cell is filled, please try in other cell!"; 
+        }else{
           socket.emit('box click', cell_object.id, c_obj.room_name);
           err_msg = "";
-        }else{
-          err_msg = "This is player "+c_obj.player_turn+"'s turn...please wait!";
         }
+      }else{
+        err_msg = "This is player "+c_obj.player_turn+"'s turn...please wait!";
       }
     }else{
       err_msg = "Game over";
@@ -85,27 +83,30 @@ var Client ={
 
     socket.on('new object', function (element_id, player_num, room_name){
       var new_object = document.getElementById(element_id);
+      var status = "";
       new_object.style.backgroundImage=images_url[player_num];
       c_obj.player_turn = (player_num == 1) ? 2 : 1;
       new_object.value = player_num;
       c_obj.count ++; 
-      c_obj.error_status.innerHTML = status;   
+
+      c_obj.error_status.innerHTML = status;
+
       if(4 < c_obj.count){
         var result = c_obj.check_status(element_id,player_num);
-        console.log(result);
-        if(result.length == 3){
+        
+        if(result.length === 3){
           for(var i=0; i < result.length; i++){
-            var cell_id = "tic_tac"+result[i];
-            var element = document.getElementById(cell_id);
+            var element = document.getElementById("tic_tac"+result[i]);
             element.style.backgroundColor = "yellow";
           }
           status ="Player "+player_num+" win!";
           c_obj.count = 10;
-        }else if(result = 0 && c_obj.count > 9){
+        }else if(result === 0 && c_obj.count > 9){
           status ="Game over..Tie up";
           c_obj.count = 10;
         }
       }
+
       c_obj.game_status.innerHTML = status; 
     });
 
