@@ -2,12 +2,18 @@ table td{
     border: 1px solid blue;
     width: 100px;
 	height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 .tic_tac_table{
     border: 1px solid blue;
     margin: 10px 85px;
 
 }
+.player_name_div{
+	padding: 20px 0px 0px 465px;
+}
+
 
 .status, .error{
 	text-align: center;

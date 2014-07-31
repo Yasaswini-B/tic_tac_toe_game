@@ -3,12 +3,17 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
+var Player = require('/Users/user/Desktop/tic_tac_toe_game/public/player.js');
 sid_array = {};
 var msg ;
+var player_counter = 1;
+var room_count = 1;
+var room = [];
 
-
-play_game = {};
-
+for(i=1;i<20;i++)
+{
+  room[i] = "room"+i;
+}
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res){
@@ -16,84 +21,48 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-	console.log('a user connected');
-	sid_array[socket.id] = socket;
-	var players =Object.keys(sid_array);
-	if(players.length == 1){
-		msg = "Waiting for the 2nd player";
-		show_table = false;
-		io.emit('single player', msg);
-	}else if(players.length == 2){
-		msg = "Game Started";
-		show_table = true;
-		io.emit('single player', msg);
-	}else{
-		msg = "Game Started between two players..please wait!";
-		show_table = true;
-		for(var i=2; i < players.length; i++){
-			console.log(players[i]);
-			sid_array[players[i]].emit('single player', msg);
+	socket.on('player name',function(player_name){
+		console.log('a user connected');
+
+		var player = new Player();
+		player.initialize(player_counter, socket, player_name);
+		sid_array[socket.id] = player;
+
+		socket.emit('new player', player_name, player_counter);
+
+		var players =Object.keys(sid_array);
+		if(players.length >= 1){
+			socket.join(room[room_count]);
+			msg = "Waiting for the 2nd player";
+			io.to(room[room_count]).emit('single player', msg, room[room_count], false);
+			if(players.length % 2 == 0){
+				msg = "Game Started";
+				socket.join(room[room_count]);
+				io.to(room[room_count]).emit('single player', msg, room[room_count], true);
+				room_count++;
+				player_counter = 0;
+			}
 		}
-		
-	}
+		player_counter++;
+	});
+	
+	socket.on('box click', function(data, room_n){
+		io.to(room_n).emit('new object', data, sid_array[socket.id].player_num, room_n );
+	});
 
 	socket.on('disconnect', function(){
 		if (!socket.id) return;
-		console.log('a user disconnected');
 		var players =Object.keys(sid_array);
-		if(players.length > 1){
-			if(players.indexOf(socket.id) == 0 || players.indexOf(socket.id) == 1){
-				msg = "Opponent Left";
-				show_table = true;
-				i_val = (players.indexOf(socket.id) == 0) ? 1 : 0;
-				sid_array[players[i_val]].emit('single player', msg, show_table);
-			}
+		if(players.indexOf(socket.id) != -1){
+			console.log('a user disconnected');
+			delete sid_array[socket.id];
 		}
-		delete sid_array[socket.id];
 	});
   
 });
 
-io.on('connection', function(socket){
-	socket.on('box click', function(data){
-		var players =Object.keys(sid_array);
-		var i = players.indexOf(socket.id);
-	  		if((players.length >= 2) && (i == 0 || i == 1)){
-		  		play_game['player_num'] = i+1;
-		  		play_game['object_id'] = data;
-		  		play_game['game_over'] = false;
-		  		player_num = i + 1;
-		    	io.emit('new object', play_game);
-			}		
-	});
-
-	socket.on('error message', function(err_msg, check_val){
-		var players =Object.keys(sid_array);
-		switch(err_msg){
-			case "filled":
-				msg = "This cell is filled, please try in other cell!";
-				sid_array[socket.id].emit('error msg display', msg);
-			break;
-			case "wrong player":
-				i_val = (check_val % 2 == 0) ? 1 : 0;
-				sid_array[players[check_val % 2]].emit('error msg display', "This is player "+(parseInt(i_val) + 1)+"'s turn...please wait!");
-				sid_array[players[i_val]].emit('error msg display', "This is your turn!");
-			break;
-			case "game over":
-				msg = "The game is over..please click play again to start new game!";
-				sid_array[socket.id].emit('error msg display', msg);
-			break;
-			default:
-				msg = "";
-				sid_array[socket.id].emit('error msg display', msg);
-			break;
-		}
-	});
-
-});
 
 
-io.emit('some event', { for: 'everyone' });
 
 http.listen(3000, function (){
   console.log('listening on *:3000');
